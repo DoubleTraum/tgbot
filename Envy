@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Свидение от Envy</title>
+  <script src="https://telegram.org"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #18181b);
+      --sec-bg: var(--tg-theme-secondary-bg-color, #27272a);
+      --text-color: var(--tg-theme-text-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #a1a1aa);
+      --btn-color: var(--tg-theme-button-color, #3b82f6);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px 16px 84px 16px;
+      min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-top: 8px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: var(--hint-color);
+      margin-top: 4px;
+    }
+
+    .card {
+      background-color: var(--sec-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card h2 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--hint-color);
+      line-height: 1.4;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      background-color: var(--btn-color);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 12px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn:active {
+      opacity: 0.85;
+    }
+
+    .profile-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--btn-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--btn-text);
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--sec-bg);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 18px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--hint-color);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--btn-color);
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Свидение от Envy</h1>
+    <p id="greeting">Добро пожаловать в приложение</p>
+  </div>
+
+  <!-- Вкладка: Меню -->
+  <div id="tab-menu" class="section active">
+    <div class="card">
+      <h2>Главное меню</h2>
+      <p>Выбери нужное действие, чтобы начать или перейти к анкетам.</p>
+      <button class="btn" onclick="sendAction('Начать поиск')">Начать</button>
+    </div>
+
+    <div class="card">
+      <h2>Актуальное</h2>
+      <p>Здесь можно разместить описание твоих услуг, акции или правила сервиса.</p>
+    </div>
+  </div>
+
+  <!-- Вкладка: Профиль -->
+  <div id="tab-profile" class="section">
+    <div class="card profile-box">
+      <div class="avatar" id="user-avatar">E</div>
+      <div>
+        <h2 id="user-name">Пользователь</h2>
+        <p id="user-username">@username</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Статус аккаунта</h2>
+      <p>ID в системе: <span id="user-id">—</span></p>
+      <button class="btn" onclick="sendAction('Редактировать профиль')">Изменить анкету</button>
+    </div>
+  </div>
+
+  <!-- Вкладка: Помощь -->
+  <div id="tab-help" class="section">
+    <div class="card">
+      <h2>Помощь и поддержка</h2>
+      <p>Если возникли вопросы по работе бота или приложения, нажми на кнопку ниже, чтобы связаться с поддержкой.</p>
+      <button class="btn" onclick="sendAction('Нужна помощь')">Написать в поддержку</button>
+    </div>
+  </div>
+
+  <!-- Нижняя панель навигации -->
+  <div class="nav">
+    <button class="nav-item active" onclick="switchTab('menu', this)">
+      <span class="nav-icon">🏠</span>
+      <span>Меню</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('profile', this)">
+      <span class="nav-icon">👤</span>
+      <span>Профиль</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('help', this)">
+      <span class="nav-icon">❓</span>
+      <span>Помощь</span>
+    </button>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand(); // Раскрывает приложение на весь экран
+    tg.ready();
+
+    // Подставляем данные пользователя из Telegram
+    const user = tg.initDataUnsafe?.user;
+    if (user) {
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+      document.getElementById('user-name').textContent = fullName;
+      document.getElementById('greeting').textContent = `Привет, ${user.first_name}!`;
+      document.getElementById('user-id').textContent = user.id;
+      
+      if (user.username) {
+        document.getElementById('user-username').textContent = `@${user.username}`;
+      }
+      if (user.photo_url) {
+        document.getElementById('user-avatar').innerHTML = `<img src="${user.photo_url}" alt="avatar">`;
+      } else {
+        document.getElementById('user-avatar').textContent = user.first_name[0].toUpperCase();
+      }
+    }
+
+    // Переключение вкладок
+    function switchTab(tabName, el) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      document.getElementById('tab-' + tabName).classList.add('active');
+      el.classList.add('active');
+    }
+
+    // Реакция на нажатие кнопок
+    function sendAction(text) {
+      tg.showAlert(`Выбрано действие: ${text}`);
+    }
+  </script>
+</body>
+</html>
